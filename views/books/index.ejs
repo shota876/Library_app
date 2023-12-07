@@ -16,6 +16,10 @@
 </form>
 <div>
   <% books.forEach(book => { %>
-    <img height="150" width="100" src="<%= book.coverImagePath %>">
+    <a href="books/<%= book.id %>">
+      <img height="150" width="100" src="<%= book.coverImagePath %>">
+    </a>
+    <!-- deleting book directly from the books page -->
+    <!-- <%- include('../partials/deleteForm', {url: `/books/${book.id}` }) %> -->
   <% }) %>
 </div>
