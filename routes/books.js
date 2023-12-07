@@ -51,27 +51,29 @@ router.post('/', async (req, res) => {
   }
 })
 
-//show book route
+// Show Book Route
 router.get('/:id', async (req, res) => {
-  try{
-    const book = await Book.findById(req.params.id).populate('author').exec()
+  try {
+    const book = await Book.findById(req.params.id)
+                           .populate('author')
+                           .exec()
     res.render('books/show', { book: book })
-  }catch{
+  } catch {
     res.redirect('/')
   }
 })
 
-//edit book route
+// Edit Book Route
 router.get('/:id/edit', async (req, res) => {
-  try{
-    let book = await Book.findById(req.params.id)
+  try {
+    const book = await Book.findById(req.params.id)
     renderEditPage(res, book)
-  }catch{
+  } catch {
     res.redirect('/')
   }
 })
 
-// update Book Route
+// Update Book Route
 router.put('/:id', async (req, res) => {
   let book
 
@@ -82,48 +84,45 @@ router.put('/:id', async (req, res) => {
     book.publishDate = new Date(req.body.publishDate)
     book.pageCount = req.body.pageCount
     book.description = req.body.description
-    if(req.body.cover != null && req.body.cover !== ''){
+    if (req.body.cover != null && req.body.cover !== '') {
       saveCover(book, req.body.cover)
     }
     await book.save()
     res.redirect(`/books/${book.id}`)
-  } catch{
-    if(book != null){
+  } catch {
+    if (book != null) {
       renderEditPage(res, book, true)
-    }else{
-      res.redirect('/')
+    } else {
+      redirect('/')
     }
   }
 })
 
-
-//Delete book page
+// Delete Book Page
 router.delete('/:id', async (req, res) => {
   let book
-  try{
+  try {
     book = await Book.findById(req.params.id)
     await book.deleteOne()
     res.redirect('/books')
-  }catch{
-    if(book != null){
+  } catch {
+    if (book != null) {
       res.render('books/show', {
         book: book,
         errorMessage: 'Could not remove book'
       })
-    }else{
+    } else {
       res.redirect('/')
     }
   }
 })
 
-
-
 async function renderNewPage(res, book, hasError = false) {
-  renderFormPage(res, book, `edit`, hasError)
+  renderFormPage(res, book, 'new', hasError)
 }
 
 async function renderEditPage(res, book, hasError = false) {
-  renderFormPage(res, book, `edit`, hasError)
+  renderFormPage(res, book, 'edit', hasError)
 }
 
 async function renderFormPage(res, book, form, hasError = false) {
@@ -133,10 +132,10 @@ async function renderFormPage(res, book, form, hasError = false) {
       authors: authors,
       book: book
     }
-    if (hasError){
-      if(form === `edit`){
+    if (hasError) {
+      if (form === 'edit') {
         params.errorMessage = 'Error Updating Book'
-      }else{
+      } else {
         params.errorMessage = 'Error Creating Book'
       }
     }
